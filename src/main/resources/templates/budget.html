@@ -4,6 +4,12 @@
 		<title>Your Budget</title>
 		<script th:include="fragments/header :: headerScripts" th:remove="tag"></script>
 		<link rel="stylesheet" href="/css/font-awesome.min.css"/>
+		<script th:inline="javascript">
+			//<![CDATA[
+			$(function() {
+			});
+			//]]>
+		</script>
 	</head>
 	<body>
 		<div class="card">
@@ -19,8 +25,20 @@
 			</div>
 			<div class="card-body">
 				<div th:each="group : ${budget.groups}" >
-					<h4 th:if="${!#strings.isEmpty(group.name)}"><a th:href="@{/budgets/{budgetId}/groups/{groupId}(budgetId=${budget.id}, groupId=${group.id})}" th:text="${group.name}"></a></h4>
-					<h4 th:if="${#strings.isEmpty(group.name)}"><a th:href="@{/budgets/{budgetId}/groups/{groupId}(budgetId=${budget.id}, groupId=${group.id})}">Unnamed Group</a></h4>
+					<div class="card" style="margin-bottom: 2em;"> 
+						<div class="card-header">
+							<h4 th:if="${!#strings.isEmpty(group.name)}"><a th:href="@{/budgets/{budgetId}/groups/{groupId}(budgetId=${budget.id}, groupId=${group.id})}" th:text="${group.name}"></a></h4>
+							<h4 th:if="${#strings.isEmpty(group.name)}"><a th:href="@{/budgets/{budgetId}/groups/{groupId}(budgetId=${budget.id}, groupId=${group.id})}">Unnamed Group</a></h4>
+						</div>
+						<div class="card-body">
+							<div th:each="category : ${group.categories}" >
+								<a th:href="@{/budgets/{budgetId}/groups/{groupId}/categories/{categoryId}(budgetId=${budget.id}, groupId=${group.id}, categoryId=${category.id})}" th:text="${category.name}"></a>
+							</div>
+							<form style="margin-top: 1.5em;" th:action="@{/budgets/{budgetId}/groups/{groupId}/categories(budgetId=${budget.id}, groupId=${group.id})}" method="post">
+								<button class="btn btn-primary" th:id="|createCategory-${group.id}|">Create new Category</button>
+							</form>
+						</div>
+					</div>
 				</div>
 				
 				<div class="row" style="margin-top: 2em;">

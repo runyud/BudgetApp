@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 @Entity
 public class Category {
@@ -77,6 +78,7 @@ public class Category {
 	}
 
 	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "category")
+	@OrderBy("id")
 	public Set<Transaction> getTransactions() {
 		return transactions;
 	}

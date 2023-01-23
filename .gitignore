@@ -4,7 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
+### Eclipse  ###
+mvnw
+mvnw.cmd
+application.properties
 .apt_generated
 .classpath
 .factorypath

@@ -2,6 +2,15 @@
 <html xmlns:th="http://thymeleaf.org">
   <head>
     <title>Login</title>
+    <script th:include="fragments/header :: headerScripts" th:remove="tag"></script>
+    <script type="text/javascript" >
+   		$(function() {
+   			$("#registerBtn").click(function() {
+   				window.location.href='/register';
+   			});
+   		});
+   	</script>
+   	
   </head>
   <body>
     <div class="card">
@@ -21,7 +30,6 @@
                 </div>
               </div>
             </div>
-            <!-- the configured LogoutConfigurer#logoutSuccessUrl is /login?logout and contains the query param logout -->
             <div th:if="${param.logout != null}">You have been
               logged out.</div>
             <div class="form-group">

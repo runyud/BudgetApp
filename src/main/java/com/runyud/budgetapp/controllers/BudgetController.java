@@ -1,11 +1,14 @@
 package com.runyud.budgetapp.controllers;
 
+import java.util.Optional;
 import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,7 +27,7 @@ public class BudgetController {
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String getBudget(@AuthenticationPrincipal User user, ModelMap model) {
 		// this should fetch budgets from the db for the logged in user
-		getBudgets(user, model);
+		populateUserBudgetOnModel(user, model);
 		return "budgets";
 	}
 
@@ -34,11 +37,20 @@ public class BudgetController {
 		Budget budget = new Budget();
 		budget = budgetService.saveBudget(user, budget);
 
-		getBudgets(user, model);
+		populateUserBudgetOnModel(user, model);
 		return budget;
 	}
 
-	private void getBudgets(User user, ModelMap model) {
+	@GetMapping("{budgetId}")
+	public String getSingleBudget(@PathVariable Long budgetId, ModelMap model) {
+		Optional<Budget> budget = budgetService.findOne(budgetId);
+		budget.ifPresent(existingBudget -> {
+			model.put("budget", existingBudget);
+		});
+		return "budget";
+	}
+
+	private void populateUserBudgetOnModel(User user, ModelMap model) {
 		TreeSet<Budget> budgets = budgetService.getBudgets(user);
 		model.put("budgets", budgets);
 	}

@@ -10,6 +10,6 @@ import com.runyud.budgetapp.domain.User;
 
 public interface BudgetDAO extends JpaRepository<Budget, Long> {
 	TreeSet<Budget> findByUsersIn(Set<User> users);
-	
+
 	long countByUsersIn(Set<User> users);
 }

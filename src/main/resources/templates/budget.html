@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+	<head>
+		<title>Your Budget</title>
+		<script th:include="fragments/header :: headerScripts" th:remove="tag"></script>
+		<link rel="stylesheet" href="/css/font-awesome.min.css"/>
+	</head>
+	<body>
+		<div class="card">
+			<div class="card-header">
+				<div class="row">
+					<nav aria-label="breadcrumb">
+					  <ol class="breadcrumb h3">
+					    <li class="breadcrumb-item"><a href="/budgets">Budgets</a></li>
+					    <li class="breadcrumb-item active" aria-current="page" th:text="${budget.name}"></li>
+					  </ol>
+					</nav>
+				</div>
+			</div>
+			<div class="card-body">
+				<div th:each="group : ${budget.groups}" >
+					<h4 th:if="${!#strings.isEmpty(group.name)}"><a th:href="@{/budgets/{budgetId}/groups/{groupId}(budgetId=${budget.id}, groupId=${group.id})}" th:text="${group.name}"></a></h4>
+					<h4 th:if="${#strings.isEmpty(group.name)}"><a th:href="@{/budgets/{budgetId}/groups/{groupId}(budgetId=${budget.id}, groupId=${group.id})}">Unnamed Group</a></h4>
+				</div>
+				
+				<div class="row" style="margin-top: 2em;">
+					<div class="col">
+						<form th:action="@{/budgets/{budgetId}/groups(budgetId=${budget.id})}" method="post">
+							<button class="btn btn-primary">Create Group</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+</html>

@@ -17,6 +17,7 @@ public class Transaction {
 	private String type;
 	private String note;
 	private Category category;
+	private Budget budget;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -68,4 +69,15 @@ public class Transaction {
 	public void setCategory(Category category) {
 		this.category = category;
 	}
+
+	@ManyToOne
+	public Budget getBudget() {
+		return budget;
+	}
+
+	public void setBudget(Budget budget) {
+		this.budget = budget;
+	}
+	
+	
 }

@@ -1,5 +1,6 @@
 package com.runyud.budgetapp.domain;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -26,8 +27,11 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 public class Budget implements Comparable<Budget> {
 	private Long id;
 	private String name;
+	private Date startDate;
+	private Date endDate;
 	private Set<User> users = new HashSet<>();
 	private SortedSet<Group> groups = new TreeSet<>();
+	private Set<Transaction> transactions = new HashSet<>();
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +49,23 @@ public class Budget implements Comparable<Budget> {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	// @Column(name="start_date")
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	@ManyToMany
@@ -67,6 +88,15 @@ public class Budget implements Comparable<Budget> {
 
 	public void setGroups(SortedSet<Group> groups) {
 		this.groups = groups;
+	}
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "budget")
+	public Set<Transaction> getTransactions() {
+		return transactions;
+	}
+
+	public void setTransactions(Set<Transaction> transactions) {
+		this.transactions = transactions;
 	}
 
 	@Override

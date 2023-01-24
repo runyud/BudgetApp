@@ -3,10 +3,57 @@
 	<head>
 		<title>Your Budget</title>
 		<script th:include="fragments/header :: headerScripts" th:remove="tag"></script>
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 		<link rel="stylesheet" href="/css/font-awesome.min.css"/>
+		<style type="text/css">
+			.link {
+				cursor: pointer;
+				color: #007bff;
+			}
+			.link:hover {
+				color: #0056b3;
+				text-decoration: underline;
+			}
+		</style>
 		<script th:inline="javascript">
 			//<![CDATA[
 			$(function() {
+				
+				var hasCategories = /*[[${hasCategories}]]*/ false; 
+				var budgetId = /*[[${budget.id}]]*/ 0;
+				$('#dateRange').daterangepicker({
+					
+				}, function(start, end, label) {
+					console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+					$.ajax({
+						url: '',
+						data: {
+							"startDate" : start.format('YYYY-MM-DD'),
+							"endDate" : end.format('YYYY-MM-DD')
+						},
+						type: 'json',
+						method: 'put',
+						success: function () {
+							/* location.reload(); */
+							$("#startDate").text(start.format('MMMM D, YYYY') + " - ");
+							$("#endDate").text(end.format('MMMM D, YYYY'));
+						},
+						error: function (error) {
+							console.log(error);
+						}
+					})
+				});
+				
+				$('#addTransaction').click(function() {
+					if(hasCategories) {
+						$('#addTransactionForm').submit();
+					} else {
+						alert("You must create a category before you can add a transaction to your budget.");
+					}
+					
+				});
 			});
 			//]]>
 		</script>
@@ -15,15 +62,30 @@
 		<div class="card">
 			<div class="card-header">
 				<div class="row">
-					<nav aria-label="breadcrumb">
-					  <ol class="breadcrumb h3">
-					    <li class="breadcrumb-item"><a href="/budgets">Budgets</a></li>
-					    <li class="breadcrumb-item active" aria-current="page" th:text="${budget.name}"></li>
-					  </ol>
-					</nav>
+					<div class="col-10 col-md-11">
+						<nav aria-label="breadcrumb">
+						  <ol class="breadcrumb h3">
+						    <li class="breadcrumb-item"><a href="/budgets">Budgets</a></li>
+						    <li class="breadcrumb-item active" aria-current="page" th:text="${budget.name}"></li>
+						  </ol>
+						</nav>
+					</div>
+					<div class="col-2 col-md-1">
+						<form id="addTransactionForm" th:action="@{/budgets/{budgetId}/transactions(budgetId=${budget.id})}", method="post">
+							<i id="addTransaction" class="fa fa-plus-circle fa-2x" aria-hidden="true"></i>
+						</form>
+					</div>
 				</div>
 			</div>
 			<div class="card-body">
+				<div class="alert alert-secondary link" role="alert" id="dateRange">
+					<span class="h5" th:inline="text" id="startDate">
+						[[${#dates.format(budget.startDate, 'MMMM d, yyyy')}]] - 
+					</span>
+					<span class="h5" th:inline="text" id="endDate">
+						[[${#dates.format(budget.endDate, 'MMMM d, yyyy')}]]
+					</span>
+				</div>
 				<div th:each="group : ${budget.groups}" >
 					<div class="card" style="margin-bottom: 2em;"> 
 						<div class="card-header">

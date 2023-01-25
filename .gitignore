@@ -7,6 +7,7 @@ target/
 ### Eclipse  ###
 mvnw
 mvnw.cmd
+application.yml
 application.properties
 .apt_generated
 .classpath

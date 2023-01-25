@@ -1,7 +1,10 @@
 package com.runyud.budgetapp.controllers;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.runyud.budgetapp.domain.Budget;
 import com.runyud.budgetapp.domain.Category;
 import com.runyud.budgetapp.domain.Transaction;
+import com.runyud.budgetapp.dto.CategoryDTO;
 import com.runyud.budgetapp.service.BudgetService;
 import com.runyud.budgetapp.service.CategoryService;
 import com.runyud.budgetapp.service.TransactionService;
@@ -36,7 +40,8 @@ public class TransactionController {
 	@PostMapping("")
 	public String addTransactionToBudget(@PathVariable Long budgetId, @PathVariable(required = false) Long groupId,
 			@PathVariable(required = false) Long categoryId) {
-
+		
+		String returnUrl = "";
 		Transaction transaction = new Transaction();
 		Optional<Budget> budget = budgetService.findOne(budgetId);
 		budget.ifPresent(existingBudget -> {
@@ -44,7 +49,7 @@ public class TransactionController {
 			existingBudget.getTransactions().add(transaction);
 		});
 
-		transaction.setDate(new Date());
+		transaction.setDate(LocalDate.now());
 
 		if (categoryId != null) {
 			Optional<Category> category = categoryService.findOne(categoryId);
@@ -54,12 +59,15 @@ public class TransactionController {
 
 				transaction.setCategory(existingCategory);
 				existingCategory.getTransactions().add(transaction);
+				returnUrl = "/budgets/" + budgetId + "/groups/" + existingCategory.getGroup().getId() + "/categories/" + existingCategory.getId() + "/transactions/";
 			}
+		} else {
+			returnUrl = "/budgets/" + budgetId + "/transactions/"; 
 		}
 
 		Transaction savedTransaction = transactionService.save(transaction);
 
-		return "redirect:/budgets/" + budgetId + "/transactions/" + savedTransaction.getId();
+		return "redirect:" + returnUrl + savedTransaction.getId();
 	}
 
 	@GetMapping("{transactionId}")
@@ -68,6 +76,11 @@ public class TransactionController {
 		transaction.ifPresent(existingTransaction -> {
 			model.put("transaction", existingTransaction);
 			model.put("budget", existingTransaction.getBudget());
+			List<CategoryDTO> categories = existingTransaction.getBudget().getGroups().stream()
+					.map(group -> group.getCategories()).flatMap(Set::stream)
+					.map(category -> new CategoryDTO(category.getId().toString(), category.getName()))
+					.collect(Collectors.toList());
+			model.put("categories", categories);
 		});
 		return "transaction";
 	}

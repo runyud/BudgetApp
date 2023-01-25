@@ -80,10 +80,10 @@
 			<div class="card-body">
 				<div class="alert alert-secondary link" role="alert" id="dateRange">
 					<span class="h5" th:inline="text" id="startDate">
-						[[${#dates.format(budget.startDate, 'MMMM d, yyyy')}]] - 
+						[[${#temporals.format(budget.startDate, 'MMMM d, yyyy')}]] - 
 					</span>
 					<span class="h5" th:inline="text" id="endDate">
-						[[${#dates.format(budget.endDate, 'MMMM d, yyyy')}]]
+						[[${#temporals.format(budget.endDate, 'MMMM d, yyyy')}]]
 					</span>
 				</div>
 				<div th:each="group : ${budget.groups}" >
@@ -93,9 +93,26 @@
 							<h4 th:if="${#strings.isEmpty(group.name)}"><a th:href="@{/budgets/{budgetId}/groups/{groupId}(budgetId=${budget.id}, groupId=${group.id})}">Unnamed Group</a></h4>
 						</div>
 						<div class="card-body">
-							<div th:each="category : ${group.categories}" >
-								<a th:href="@{/budgets/{budgetId}/groups/{groupId}/categories/{categoryId}(budgetId=${budget.id}, groupId=${group.id}, categoryId=${category.id})}" th:text="${category.name}"></a>
-							</div>
+							<table class="table">
+								<thead>
+									<tr>
+										<th scope="col">Category</th>
+										<th scope="col">Planned</th>
+										<th scope="col">Spent</th>
+										<th scope="col">Remaining</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="category : ${group.categories}" > 
+										<td scope="row"><a th:href="@{/budgets/{budgetId}/groups/{groupId}/categories/{categoryId}(budgetId=${budget.id}, groupId=${group.id}, categoryId=${category.id})}" th:text="${category.name}"></a></td>
+										<td th:if="${category.budget != null}" th:text="|$${#numbers.formatDecimal(category.budget, 0, 'COMMA', 2, 'POINT')}|"></td>
+										<td th:if="${category.budget == null}">$0.00</td>
+										<td th:text="|$${#numbers.formatDecimal(category.spent, 0, 'COMMA', 2, 'POINT')}|"></td>
+										<td th:text="|$${#numbers.formatDecimal(category.remaining, 0, 'COMMA', 2, 'POINT')}|"></td>
+									</tr>
+								</tbody>
+							</table>
+	
 							<form style="margin-top: 1.5em;" th:action="@{/budgets/{budgetId}/groups/{groupId}/categories(budgetId=${budget.id}, groupId=${group.id})}" method="post">
 								<button class="btn btn-primary" th:id="|createCategory-${group.id}|">Create new Category</button>
 							</form>

@@ -1,8 +1,7 @@
 package com.runyud.budgetapp.controllers;
 
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.TreeSet;
 
@@ -41,20 +40,9 @@ public class BudgetController {
 	public @ResponseBody Budget postBudget(@AuthenticationPrincipal User user, ModelMap model) {
 
 		Budget budget = new Budget();
-		Calendar cal = Calendar.getInstance();
 
-		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 1, 0, 0, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-
-		Date firstOfMonth = cal.getTime();
-
-		cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
-		cal.set(Calendar.HOUR_OF_DAY, cal.getActualMaximum(Calendar.HOUR_OF_DAY));
-		cal.set(Calendar.MINUTE, cal.getActualMaximum(Calendar.MINUTE));
-		cal.set(Calendar.SECOND, cal.getActualMaximum(Calendar.SECOND));
-		cal.set(Calendar.MILLISECOND, 0);
-
-		Date lastOfMonth = cal.getTime();
+		LocalDate firstOfMonth = LocalDate.now().withDayOfMonth(1);
+		LocalDate lastOfMonth = LocalDate.now().withDayOfMonth(firstOfMonth.lengthOfMonth());
 
 		budget.setStartDate(firstOfMonth);
 		budget.setEndDate(lastOfMonth);

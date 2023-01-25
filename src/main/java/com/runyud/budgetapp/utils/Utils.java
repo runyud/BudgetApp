@@ -1,13 +1,13 @@
 package com.runyud.budgetapp.utils;
 
 import java.text.ParseException;
-import java.util.Date;
-
-import org.apache.commons.lang3.time.DateUtils;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Utils {
 
-	public static Date convertStringToDate(String date) throws ParseException {
-		return DateUtils.parseDate(date, "yyyy-MM-dd");
+	public static LocalDate convertStringToDate(String date) throws ParseException {
+
+		return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	}
 }

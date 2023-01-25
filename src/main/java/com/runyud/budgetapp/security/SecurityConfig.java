@@ -33,7 +33,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		System.out.println("test encoded password is "  + passwordEncoder.encode("test"));
 		return passwordEncoder;
 	}
 
